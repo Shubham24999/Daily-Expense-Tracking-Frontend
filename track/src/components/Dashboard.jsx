@@ -1,97 +1,158 @@
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-    Box,
-    Typography,
-    Paper,
-    CircularProgress,
-    Grid,
-    Stack
+    Box, Typography, Paper, CircularProgress, Snackbar,
+    Alert, Button, useMediaQuery, useTheme
 } from '@mui/material';
+import ExpenseForm from './ExpenseForm';
+import ExpenseDetails from './ExpenseDetails';
 
 const Dashboard = () => {
+    const [expenses, setExpenses] = useState([]);
+
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [openForm, setOpenForm] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
-    useEffect(() => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+    const fetchSummary = () => {
         axios.get('http://127.0.0.1:8080/api/expense/summary/1')
-            .then((response) => {
-                setSummary(response.data);
+            .then(res => {
+                console.log("Summary data", res.data);
+
+                setSummary(res.data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Error fetching summary", err);
+                setLoading(false);
+            });
+    };
+
+    const fetchExpenses = () => {
+        fetch('http://127.0.0.1:8080/api/expense/get/1')
+            .then((response) => response.json())
+            .then((data) => {
+                setExpenses(data.data || []);
                 setLoading(false);
             })
             .catch((error) => {
-                console.error('Error fetching summary:', error);
+                console.error('Error fetching expenses:', error);
                 setLoading(false);
             });
+    };
+
+
+    useEffect(() => {
+        fetchExpenses();
+        fetchSummary();
     }, []);
 
-    if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
 
-    const getColor = (exceeded) => (exceeded ? '#f44336' : '#4caf50'); // red : green
+    const getColor = (exceeded) => (exceeded ? '#f44336' : '#4caf50');
+
+    const showValue = (exceeded) => (exceeded ? 'Extra Spent' : 'Remaining');
+
+    if (loading) return <CircularProgress />;
 
     return (
-        <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-            <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={2}
-                sx={{ width: '100%' }}
-                margin={{ xs: 2, sm: 2, md: 4 }}
+        <Box sx={{ p: { xs: 2, sm: 4 } }}>
+
+            {/* Expenses + Add Button Container */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: 2,
+                    alignItems: isMobile ? 'stretch' : 'center',
+                    justifyContent: 'space-between',
+                    mb: 3
+                }}
             >
-                <Paper
-                    elevation={3}
+                {/* Cards Container */}
+                <Box
                     sx={{
-                        p: 2,
-                        backgroundColor: getColor(summary.exceeded),
-                        flex: 1,
                         display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexDirection: { xs: 'row', sm: 'column', md: 'row' },
-                        gap: 1
+                        flexDirection: isMobile ? 'column' : 'row',
+                        gap: 2,
+                        flex: 1
                     }}
                 >
-                    <Typography variant="h6">Expense</Typography>
-                    <Typography variant="h6">{summary.totalSpent}</Typography>
-                </Paper>
+                    <Paper sx={{
+                        flex: 1,
+                        p: 2,
+                        bgcolor: getColor(summary.exceeded),
+                        color: 'white'
+                    }}>
+                        <Typography variant="h6">Expense</Typography>
+                        <Typography variant="h5">{summary.totalSpent}</Typography>
+                    </Paper>
 
-                <Paper
-                    elevation={3}
-                    sx={{
-                        p: 2,
+                    <Paper sx={{
                         flex: 1,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexDirection: { xs: 'row', sm: 'column', md: 'row' },
-                        gap: 1
-                    }}
-                >
-                    <Typography variant="h6">Remaining</Typography>
-                    <Typography variant="h6">{summary.remaining}</Typography>
-                </Paper>
+                        p: 2,
+                        bgcolor: 'primary.main',
+                        color: 'white'
+                    }}>
+                        <Typography variant="h6">{showValue(summary.exceeded)}</Typography>
+                        <Typography variant="h5">{summary.remaining}</Typography>
+                    </Paper>
 
-                <Paper
-                    elevation={3}
-                    sx={{
-                        p: 2,
+                    <Paper sx={{
                         flex: 1,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexDirection: { xs: 'row', sm: 'column', md: 'row' },
-                        gap: 1
-                    }}
-                >
-                    <Typography variant="h6">Daily Budget</Typography>
-                    <Typography variant="h6">{summary.budget}</Typography>
-                </Paper>
-            </Stack>
+                        p: 2,
+                        bgcolor: 'secondary.main',
+                        color: 'white'
+                    }}>
+                        <Typography variant="h6">Budget</Typography>
+                        <Typography variant="h5">{summary.budget}</Typography>
+                    </Paper>
+                </Box>
+
+            </Box>
+
+            {/* Button below cards on mobile */}
+            {isMobile ? (
+                <Box mt={2}>
+                    <Button variant="contained" fullWidth onClick={() => setOpenForm(true)}>
+                        Add Expense
+                    </Button>
+                </Box>
+            ) : (
+                <Button variant="contained" onClick={() => setOpenForm(true)} sx={{ height: 'fit-content' }}>
+                    Add Expense
+                </Button>
+            )}
+
+            <ExpenseDetails expenseData={expenses} isLoading={loading} />
+
+            {/* Add Expense Modal */}
+            <ExpenseForm
+                open={openForm}
+                onClose={() => setOpenForm(false)}
+                onSuccess={() => {
+                    setShowSuccess(true);
+                    fetchSummary();      // ✅ update summary
+                    fetchExpenses();     // ✅ update list
+                }}
+            />
+
+
+            {/* Toast */}
+            <Snackbar
+                open={showSuccess}
+                autoHideDuration={3000}
+                onClose={() => setShowSuccess(false)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={() => setShowSuccess(false)} severity="success" sx={{ width: '100%' }}>
+                    Expense added successfully!
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
