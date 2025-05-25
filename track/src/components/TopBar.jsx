@@ -9,7 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 export default function TopBar() {
     const [isLoggedIn, setIsLoggedIn] = React.useState(true);
-    const [userName, setUserName] = React.useState('Nitin');
+    const [userName, setUserName] = React.useState('Shubham');
     const [userEmail, setUserEmail] = React.useState('');
     const [userId, setUserId] = React.useState('');
 

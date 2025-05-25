@@ -5,37 +5,43 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
-const ExpenseForm = ({ open, onClose, onSuccess }) => {
+const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     userId: 1,
-    spentDetails: '',
-    spentAmount: '',
-    date: Math.floor(Date.now() / 1000),
+    // spentDetails: '',
+    budgetAmount: '',
+    // spentAmount: '',
+    // remainingAmount: '',
+    // date: Math.floor(Date.now() / 1000),
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const parsedValue = ['budgetAmount', 'spentAmount', 'remainingAmount'].includes(name)
+      ? parseFloat(value)
+      : value;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'spentAmount' ? parseFloat(value) : value
+      [name]: parsedValue
     }));
   };
 
   const handleSubmit = () => {
-    axios.post('http://127.0.0.1:8080/api/expense/add', formData)
+    axios.post('http://127.0.0.1:8080/api/expense/update/budget', formData)
       .then(() => {
         onSuccess();
         onClose();
       })
-      .catch((err) => console.error('Submit error', err));
+      .catch((err) => console.error('Update error', err));
   };
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"       // 'xs', 'sm', 'md', etc.
-      fullWidth={true}   // limits width but doesn’t go full screen
+      maxWidth="sm"
+      fullWidth
       PaperProps={{
         sx: {
           p: 2,
@@ -43,17 +49,26 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
         },
       }}
     >
-      <DialogTitle>Add Expense</DialogTitle>
+      <DialogTitle>Update Budget</DialogTitle>
       <DialogContent>
-        <TextField
+        {/* <TextField
           label="Spent Details"
           name="spentDetails"
           value={formData.spentDetails}
           onChange={handleChange}
           fullWidth
           margin="normal"
-        />
+        /> */}
         <TextField
+          label="Budget Amount"
+          name="budgetAmount"
+          type="number"
+          value={formData.budgetAmount}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        {/* <TextField
           label="Spent Amount"
           name="spentAmount"
           type="number"
@@ -61,14 +76,15 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
           onChange={handleChange}
           fullWidth
           margin="normal"
-        />
+        /> */}
+        
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">Submit</Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">Update</Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default ExpenseForm;
+export default UpdateBudgetForm;

@@ -7,13 +7,16 @@ import {
 } from '@mui/material';
 import ExpenseForm from './ExpenseForm';
 import ExpenseDetails from './ExpenseDetails';
+import WhileLoadingPage from './WhileLoadingPage';
+import UpdateBudgetForm from './UpdateBudgetForm';
 
 const Dashboard = () => {
     const [expenses, setExpenses] = useState([]);
 
-    const [summary, setSummary] = useState(null);
+    const [summaryData, setSummaryData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [openForm, setOpenForm] = useState(false);
+    const [openUpdateBudget, setOpenUpdateBudget] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
     const theme = useTheme();
@@ -24,7 +27,7 @@ const Dashboard = () => {
             .then(res => {
                 console.log("Summary data", res.data);
 
-                setSummary(res.data);
+                setSummaryData(res.data);
                 setLoading(false);
             })
             .catch(err => {
@@ -36,8 +39,8 @@ const Dashboard = () => {
     const fetchExpenses = () => {
         fetch('http://127.0.0.1:8080/api/expense/get/1')
             .then((response) => response.json())
-            .then((data) => {
-                setExpenses(data.data || []);
+            .then((res) => {
+                setExpenses(res.data || []);
                 setLoading(false);
             })
             .catch((error) => {
@@ -59,7 +62,7 @@ const Dashboard = () => {
 
     if (loading) return <CircularProgress />;
 
-    return (
+    return (summaryData ?
         <Box sx={{ p: { xs: 2, sm: 4 } }}>
 
             {/* Expenses + Add Button Container */}
@@ -85,11 +88,11 @@ const Dashboard = () => {
                     <Paper sx={{
                         flex: 1,
                         p: 2,
-                        bgcolor: getColor(summary.exceeded),
+                        bgcolor: getColor(summaryData.exceeded),
                         color: 'white'
                     }}>
                         <Typography variant="h6">Expense</Typography>
-                        <Typography variant="h5">{summary.totalSpent}</Typography>
+                        <Typography variant="h5">{summaryData.totalSpent}</Typography>
                     </Paper>
 
                     <Paper sx={{
@@ -98,8 +101,8 @@ const Dashboard = () => {
                         bgcolor: 'primary.main',
                         color: 'white'
                     }}>
-                        <Typography variant="h6">{showValue(summary.exceeded)}</Typography>
-                        <Typography variant="h5">{summary.remaining}</Typography>
+                        <Typography variant="h6">{showValue(summaryData.exceeded)}</Typography>
+                        <Typography variant="h5">{summaryData.remaining}</Typography>
                     </Paper>
 
                     <Paper sx={{
@@ -109,14 +112,42 @@ const Dashboard = () => {
                         color: 'white'
                     }}>
                         <Typography variant="h6">Budget</Typography>
-                        <Typography variant="h5">{summary.budget}</Typography>
+                        <Typography variant="h5">{summaryData.budget}</Typography>
                     </Paper>
                 </Box>
 
             </Box>
 
-            {/* Button below cards on mobile */}
-            {isMobile ? (
+            {/* Buttons Section */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: 2,
+                    mt: 2
+                }}
+            >
+                <Button
+                    variant="contained"
+                    fullWidth={isMobile}
+                    onClick={() => setOpenForm(true)}
+                >
+                    Add Expense
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    fullWidth={isMobile}
+                    onClick={() => setOpenUpdateBudget(true)}
+                >
+                    Update Budget
+                </Button>
+            </Box>
+
+
+
+            {/* {isMobile ? (
                 <Box mt={2}>
                     <Button variant="contained" fullWidth onClick={() => setOpenForm(true)}>
                         Add Expense
@@ -126,7 +157,7 @@ const Dashboard = () => {
                 <Button variant="contained" onClick={() => setOpenForm(true)} sx={{ height: 'fit-content' }}>
                     Add Expense
                 </Button>
-            )}
+            )} */}
 
             <ExpenseDetails expenseData={expenses} isLoading={loading} />
 
@@ -141,6 +172,16 @@ const Dashboard = () => {
                 }}
             />
 
+            <UpdateBudgetForm
+                open={openUpdateBudget}
+                onClose={() => setOpenUpdateBudget(false)}
+                onSuccess={() => {
+                    setShowSuccess(true);
+                    fetchSummary();
+                }}
+
+            />
+
 
             {/* Toast */}
             <Snackbar
@@ -153,7 +194,7 @@ const Dashboard = () => {
                     Expense added successfully!
                 </Alert>
             </Snackbar>
-        </Box>
+        </Box> : <WhileLoadingPage />
     );
 };
 
