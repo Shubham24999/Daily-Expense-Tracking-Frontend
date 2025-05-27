@@ -25,6 +25,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function ExpenseDetails({ expenseData, isLoading }) {
+
+  var index=1;
+
+  if (!expenseData || expenseData.length === 0) {
+    return (
+      <Box sx={{ mt: 4, p: 2 }}>
+        <Typography variant="h6">No expense data available</Typography>
+      </Box>
+    );
+  }
+
   return (
     <TableContainer component={Paper} sx={{ mt: 4, p: { xs: 1, sm: 2, md: 3 } }}>
       <Typography variant="h6" sx={{ m: 2 }}>
@@ -48,7 +59,7 @@ export default function ExpenseDetails({ expenseData, isLoading }) {
               {expenseData.map((expense) => (
                 <StyledTableRow key={expense.id}>
                   <StyledTableCell component="th" scope="row">
-                    {expense.id}
+                    {index++}
                   </StyledTableCell>
                   <StyledTableCell align="right">
                     {expense.spentAmount.toFixed(2)}

@@ -77,7 +77,7 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
           fullWidth
           margin="normal"
         /> */}
-        
+
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">Cancel</Button>
