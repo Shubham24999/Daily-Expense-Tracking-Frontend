@@ -6,14 +6,16 @@ import {
 import axios from 'axios';
 
 const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
-  const [formData, setFormData] = useState({
+  var userDetails = {
     userId: 1,
     // spentDetails: '',
     budgetAmount: '',
     // spentAmount: '',
     // remainingAmount: '',
     // date: Math.floor(Date.now() / 1000),
-  });
+  };
+
+  const [formData, setFormData] = useState(userDetails);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +34,8 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
       .then(() => {
         onSuccess();
         onClose();
+
+        setFormData(userDetails);
       })
       .catch((err) => console.error('Update error', err));
   };
@@ -51,14 +55,6 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
     >
       <DialogTitle>Update Budget</DialogTitle>
       <DialogContent>
-        {/* <TextField
-          label="Spent Details"
-          name="spentDetails"
-          value={formData.spentDetails}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        /> */}
         <TextField
           label="Budget Amount"
           name="budgetAmount"
@@ -68,16 +64,6 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
           fullWidth
           margin="normal"
         />
-        {/* <TextField
-          label="Spent Amount"
-          name="spentAmount"
-          type="number"
-          value={formData.spentAmount}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        /> */}
-
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">Cancel</Button>

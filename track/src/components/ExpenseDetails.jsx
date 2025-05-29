@@ -26,13 +26,39 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function ExpenseDetails({ expenseData, isLoading }) {
 
-  var index=1;
+  var index = 1;
 
   if (!expenseData || expenseData.length === 0) {
     return (
-      <Box sx={{ mt: 4, p: 2 }}>
-        <Typography variant="h6">No expense data available</Typography>
-      </Box>
+      <TableContainer component={Paper} sx={{ mt: 4, p: { xs: 1, sm: 2, md: 3 } }}>
+        <Typography variant="h6" sx={{ m: 2 }}>
+          Expense Details
+        </Typography>
+
+        {isLoading ? (
+          <CircularProgress sx={{ m: 2 }} />
+        ) : (
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table sx={{ minWidth: 500 }} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>ID</StyledTableCell>
+                  <StyledTableCell align="right">Amount (₹)</StyledTableCell>
+                  <StyledTableCell align="right">Details</StyledTableCell>
+                  <StyledTableCell align="right">Spent Time</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <StyledTableRow>
+                  <StyledTableCell colSpan={4} align="center">
+                    No expenses recorded yet.
+                  </StyledTableCell>
+                </StyledTableRow>
+              </ TableBody>
+            </Table>
+          </Box>
+        )}
+      </TableContainer>
     );
   }
 
@@ -52,7 +78,7 @@ export default function ExpenseDetails({ expenseData, isLoading }) {
                 <StyledTableCell>ID</StyledTableCell>
                 <StyledTableCell align="right">Amount (₹)</StyledTableCell>
                 <StyledTableCell align="right">Details</StyledTableCell>
-                <StyledTableCell align="right">Created Time</StyledTableCell>
+                <StyledTableCell align="right">Spent Time</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>

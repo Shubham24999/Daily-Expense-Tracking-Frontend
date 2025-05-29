@@ -130,34 +130,22 @@ const Dashboard = () => {
                 <Button
                     variant="contained"
                     fullWidth={isMobile}
+                    sx={{ flex: isMobile ? 'none' : 4 }}
                     onClick={() => setOpenForm(true)}
                 >
                     Add Expense
                 </Button>
 
                 <Button
-                    variant="outlined"
-                    color="secondary"
+                    variant="contained"
+                    color="error"
+                    sx={{ flex: isMobile ? 'none' : 4 }}
                     fullWidth={isMobile}
                     onClick={() => setOpenUpdateBudget(true)}
                 >
                     Update Budget
                 </Button>
             </Box>
-
-
-
-            {/* {isMobile ? (
-                <Box mt={2}>
-                    <Button variant="contained" fullWidth onClick={() => setOpenForm(true)}>
-                        Add Expense
-                    </Button>
-                </Box>
-            ) : (
-                <Button variant="contained" onClick={() => setOpenForm(true)} sx={{ height: 'fit-content' }}>
-                    Add Expense
-                </Button>
-            )} */}
 
             <ExpenseDetails expenseData={expenses} isLoading={loading} />
 
@@ -167,8 +155,8 @@ const Dashboard = () => {
                 onClose={() => setOpenForm(false)}
                 onSuccess={() => {
                     setShowSuccess(true);
-                    fetchSummary();      // ✅ update summary
-                    fetchExpenses();     // ✅ update list
+                    fetchSummary();
+                    fetchExpenses();
                 }}
             />
 

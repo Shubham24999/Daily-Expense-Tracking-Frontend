@@ -6,12 +6,15 @@ import {
 import axios from 'axios';
 
 const ExpenseForm = ({ open, onClose, onSuccess }) => {
-  const [formData, setFormData] = useState({
+  
+  var expenseDetails = {
     userId: 1,
     spentDetails: '',
     spentAmount: '',
     date: Math.floor(Date.now() / 1000),
-  });
+  };
+
+  const [formData, setFormData] = useState(expenseDetails);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,6 +29,7 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
       .then(() => {
         onSuccess();
         onClose();
+        setFormData(expenseDetails);
       })
       .catch((err) => console.error('Submit error', err));
   };
