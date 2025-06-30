@@ -30,7 +30,7 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
   };
 
   const handleSubmit = () => {
-    axios.post('http://127.0.0.1:8080/api/expense/update/budget', formData)
+    axios.post('http://localhost:8080/api/expense/update/budget', formData)
       .then(() => {
         onSuccess();
         onClose();

@@ -25,7 +25,7 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
   };
 
   const handleSubmit = () => {
-    axios.post('http://127.0.0.1:8080/api/expense/add', formData)
+    axios.post('http://localhost:8080/api/expense/add', formData)
       .then(() => {
         onSuccess();
         onClose();

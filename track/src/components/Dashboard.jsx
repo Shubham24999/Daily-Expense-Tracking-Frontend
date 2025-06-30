@@ -13,7 +13,13 @@ import UpdateBudgetForm from './UpdateBudgetForm';
 const Dashboard = () => {
     const [expenses, setExpenses] = useState([]);
 
-    const [summaryData, setSummaryData] = useState(null);
+    const [summaryData, setSummaryData] = useState({
+        totalSpent: 0,
+        remaining: 0,
+        budget: 0,
+        exceeded: false
+
+    });
     const [loading, setLoading] = useState(true);
     const [openForm, setOpenForm] = useState(false);
     const [openUpdateBudget, setOpenUpdateBudget] = useState(false);
@@ -37,7 +43,7 @@ const Dashboard = () => {
     };
 
     const fetchExpenses = () => {
-        fetch('http://127.0.0.1:8080/api/expense/get/1')
+        fetch('http://localhost:8080/api/expense/get/1')
             .then((response) => response.json())
             .then((res) => {
                 setExpenses(res.data || []);
@@ -62,7 +68,7 @@ const Dashboard = () => {
 
     if (loading) return <CircularProgress />;
 
-    return (summaryData ?
+    return (!loading ?
         <Box sx={{ p: { xs: 2, sm: 4 } }}>
 
             {/* Expenses + Add Button Container */}
