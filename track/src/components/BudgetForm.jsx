@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Button
+  TextField, Button, Alert, Snackbar
 } from '@mui/material';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
+  var userId = localStorage.getItem('userId');
   var userDetails = {
-    userId: 1,
+    userId: userId,
     // spentDetails: '',
     budgetAmount: '',
     // spentAmount: '',
@@ -15,12 +18,15 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
     // date: Math.floor(Date.now() / 1000),
   };
 
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
   const [formData, setFormData] = useState(userDetails);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     const parsedValue = ['budgetAmount', 'spentAmount', 'remainingAmount'].includes(name)
-      ? parseFloat(value)
+      ? value
       : value;
 
     setFormData((prev) => ({
@@ -30,14 +36,28 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
   };
 
   const handleSubmit = () => {
-    axios.post('http://localhost:8080/api/expense/update/budget', formData)
-      .then(() => {
-        onSuccess();
-        onClose();
 
-        setFormData(userDetails);
-      })
-      .catch((err) => console.error('Update error', err));
+    if (Number(formData.budgetAmount) < 0) {
+      toast.warn("Please Use Valid Number.");
+      formData.spentAmount = '';
+
+    } else if (formData.budgetAmount === 0) {
+      setErrorMessage("Please add Budget Amount to Update");
+      setShowError(true);
+    } else {
+      const payload = {
+        ...formData,
+        budgetAmount: Number(formData.budgetAmount),
+      };
+      axios.post('http://localhost:8080/api/expense/update/budget', payload)
+        .then(() => {
+          onSuccess();
+          onClose();
+
+          setFormData(userDetails);
+        })
+        .catch((err) => console.error('Update error', err));
+    }
   };
 
   return (
@@ -69,6 +89,16 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
         <Button onClick={onClose} color="secondary">Cancel</Button>
         <Button onClick={handleSubmit} variant="contained" color="primary">Update</Button>
       </DialogActions>
+      <Snackbar
+        open={showError}
+        autoHideDuration={2000}
+        onClose={() => setShowError(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setShowError(false)} severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 };

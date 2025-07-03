@@ -9,8 +9,17 @@ import {
   Divider,
   Paper
 } from '@mui/material';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
+
+  const navigate = useNavigate();
+
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -26,10 +35,35 @@ export default function Login() {
 
   const handleEmailLogin = (e) => {
     e.preventDefault();
-    // 🔐 Replace with real email/password auth logic
-    console.log('Logging in with:', formData);
-    alert(`Logging in with email: ${formData.email}`);
+
+    axios.post('http://127.0.0.1:8080/auth/login', formData)
+      .then((response) => {
+        const res = response.data;
+
+        if (res.status === "OK") {
+          const { token, id, name } = res.data;
+
+          // Store in localStorage
+          localStorage.setItem('token', token);
+          localStorage.setItem('userId', id);
+          localStorage.setItem('name', name);
+          localStorage.removeItem('demoUserExpenses')
+          localStorage.removeItem('demoUserEmail')
+
+          console.log("Login successful!");
+          toast.info("Login successful!");
+          navigate('/'); // Redirect to dashboard
+        } else {
+          console.error("Login failed: " + res.message);
+          toast.error("Something went Wrong...");
+        }
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        toast.error("Login failed. Please check your credentials.");
+      });
   };
+
 
   return (
     <Box

@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Button
+  TextField, Button, Snackbar, Alert
 } from '@mui/material';
+
 import axios from 'axios';
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const ExpenseForm = ({ open, onClose, onSuccess }) => {
-  
+
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  var userId = localStorage.getItem('userId');
+
+
   var expenseDetails = {
-    userId: 1,
+    userId: userId,
     spentDetails: '',
     spentAmount: '',
     date: Math.floor(Date.now() / 1000),
@@ -20,19 +29,37 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'spentAmount' ? parseFloat(value) : value
+      [name]: value
     }));
+
   };
 
   const handleSubmit = () => {
-    axios.post('http://localhost:8080/api/expense/add', formData)
-      .then(() => {
-        onSuccess();
-        onClose();
-        setFormData(expenseDetails);
-      })
-      .catch((err) => console.error('Submit error', err));
+
+    if (Number(formData.spentAmount) < 0) {
+      toast.warn("Please Use Valid Number.");
+      formData.spentAmount = '';
+
+    }
+    else if (!formData.spentAmount || Number(formData.spentAmount) === 0) {
+      setErrorMessage("Please Add Spent Amount for Expense.");
+      setShowError(true);
+    } else {
+      const payload = {
+        ...formData,
+        spentAmount: Number(formData.spentAmount),
+      };
+
+      axios.post('http://localhost:8080/api/expense/add', payload)
+        .then(() => {
+          onSuccess();
+          onClose();
+          setFormData(expenseDetails);
+        })
+        .catch((err) => console.error('Submit error', err));
+    }
   };
+
 
   return (
     <Dialog
@@ -71,6 +98,18 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
         <Button onClick={onClose} color="secondary">Cancel</Button>
         <Button onClick={handleSubmit} variant="contained" color="primary">Submit</Button>
       </DialogActions>
+      {/* to show alert message */}
+      <Snackbar
+        open={showError}
+        autoHideDuration={2000}
+        onClose={() => setShowError(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setShowError(false)} severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
+
     </Dialog>
   );
 };

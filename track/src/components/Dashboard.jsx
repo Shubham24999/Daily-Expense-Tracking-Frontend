@@ -8,10 +8,15 @@ import {
 import ExpenseForm from './ExpenseForm';
 import ExpenseDetails from './ExpenseDetails';
 import WhileLoadingPage from './WhileLoadingPage';
-import UpdateBudgetForm from './UpdateBudgetForm';
+import UpdateBudgetForm from './BudgetForm';
 
 const Dashboard = () => {
+
+    // const userLoggedIn = localStorage.getItem('token') === null ? false : true;
+    const userLoggedIn = !!localStorage.getItem('token'); // cleaner way
+
     const [expenses, setExpenses] = useState([]);
+    var userId = localStorage.getItem('userId');
 
     const [summaryData, setSummaryData] = useState({
         totalSpent: 0,
@@ -29,7 +34,7 @@ const Dashboard = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const fetchSummary = () => {
-        axios.get('http://127.0.0.1:8080/api/expense/summary/1')
+        axios.get(`http://127.0.0.1:8080/api/expense/summary/${userId}`)
             .then(res => {
                 console.log("Summary data", res.data);
 
@@ -43,23 +48,56 @@ const Dashboard = () => {
     };
 
     const fetchExpenses = () => {
-        fetch('http://localhost:8080/api/expense/get/1')
-            .then((response) => response.json())
+
+        axios.get(`http://localhost:8080/api/expense/get/${userId}`)
             .then((res) => {
-                setExpenses(res.data || []);
+                console.log("Expenses data", res.data);
+                setExpenses(res.data.data || []);
                 setLoading(false);
             })
             .catch((error) => {
-                console.error('Error fetching expenses:', error);
+                console.error("Error fetching expenses", error);
                 setLoading(false);
             });
+
     };
 
 
     useEffect(() => {
-        fetchExpenses();
-        fetchSummary();
-    }, []);
+        if (userLoggedIn) {
+            fetchExpenses();
+            fetchSummary();
+        } else {
+            // Load demo data from localStorage
+            const demoExpenses = localStorage.getItem('demoUserExpenses');
+            const demoSummary = localStorage.getItem('demoUserSummary');
+
+            try {
+                const parsedExpenses = demoExpenses ? JSON.parse(demoExpenses) : [];
+                const parsedSummary = demoSummary ? JSON.parse(demoSummary) : {
+                    totalSpent: 1500,
+                    remaining: 500,
+                    budget: 2500,
+                    exceeded: false,
+                };
+
+                setExpenses(parsedExpenses);
+                setSummaryData(parsedSummary);
+            } catch (error) {
+                console.error("Failed to parse demo user data", error);
+                setExpenses([]);
+                setSummaryData({
+                    totalSpent: 0,
+                    remaining: 0,
+                    budget: 0,
+                    exceeded: false,
+                });
+            }
+
+            setLoading(false);
+        }
+    }, [userLoggedIn]);
+
 
 
     const getColor = (exceeded) => (exceeded ? '#f44336' : '#4caf50');
@@ -180,7 +218,7 @@ const Dashboard = () => {
             {/* Toast */}
             <Snackbar
                 open={showSuccess}
-                autoHideDuration={3000}
+                autoHideDuration={2000}
                 onClose={() => setShowSuccess(false)}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >

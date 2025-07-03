@@ -2,24 +2,35 @@
 
 
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
   Button,
-  TextField,
-  Divider,
   Paper
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function LogOut() {
-
+  const navigate = useNavigate();
 
   const handleLogout = (e) => {
     e.preventDefault();
-    // 🔐 Replace with real email/password auth logic
-    console.log('Log out :',e);
-    alert(`Logged out`);
+
+    // 🔐 Clear all auth-related data
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('name');
+    
+
+    toast.success("Logged out successfully!");
+
+    setTimeout(() => {
+      navigate("/");
+    }, 1500);
+
   };
 
   return (
@@ -38,7 +49,7 @@ export default function LogOut() {
           Are you sure you want to log out?
         </Typography>
 
-       <form onSubmit={handleLogout}>
+        <form onSubmit={handleLogout}>
           <Button
             type="submit"
             fullWidth
@@ -47,32 +58,13 @@ export default function LogOut() {
           >
             Log Out
           </Button>
-       </form>
-        
-
+        </form>
       </Paper>
+
+      <ToastContainer position="top-center" />
     </Box>
   );
 }
 
 
-// function LogOut() {
 
-//     // this should open as pop form
-
-//     const handleLogout = () => {
-//         // Logic to handle logout, e.g., clearing user data, redirecting to default home page.
-//         console.log("User logged out");
-//     };
-
-//     return (
-//         <div>
-//             <h2>Are you sure you want to log out?</h2>
-//             <button onClick={handleLogout} style={{ padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '5px' }}>
-//                 Log Out
-//             </button>
-//         </div>
-//     );
-// }
-
-// export default LogOut;
