@@ -7,14 +7,11 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import { toast } from 'react-toastify';
 
-export default function TopBar() {
+export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
     const [openDialog, setOpenDialog] = React.useState(false);
     const navigate = useNavigate();
 
-    const userLoggedIn = !!localStorage.getItem('token');
     const userName = localStorage.getItem('name');
-    // const userEmail = localStorage.getItem('email');
-    // const userId = localStorage.getItem('userId');
 
     const handleLogoutConfirm = () => {
         // Clear user data
@@ -23,31 +20,14 @@ export default function TopBar() {
         localStorage.removeItem('name');
         localStorage.removeItem('email');
         localStorage.removeItem('userLoggedIn');
-        localStorage.setItem('demoUserEmail', 'demo@example.com');
-        localStorage.setItem('demoUserExpenses', JSON.stringify([
-            {
-                id: 1,
-                spentDetails: 'Demo Food',
-                spentAmount: 500,
-                expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000),
-            },
-            {
-                id: 2,
-                spentDetails: 'Demo Transport',
-                spentAmount: 300,
-                expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000),
-            },
-            {
-                id: 3,
-                spentDetails: 'Demo Shopping',
-                spentAmount: 700,
-                expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000),
-            }
-        ]));
+      
+        setUserLoggedIn(false);
 
         toast.success('Logged out successfully');
         setOpenDialog(false);
-        navigate('/');
+        // window.location.href = "/";   tis is not a good method
+        navigate("/");
+    
     };
 
     return (

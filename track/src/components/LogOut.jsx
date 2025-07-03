@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function LogOut() {
+export default function LogOut({setUserLoggedIn}) {
   const navigate = useNavigate();
 
   const handleLogout = (e) => {
@@ -23,7 +23,7 @@ export default function LogOut() {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('name');
-    
+
 
     toast.success("Logged out successfully!");
 

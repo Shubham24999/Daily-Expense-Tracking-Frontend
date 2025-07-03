@@ -10,12 +10,12 @@ import {
   Paper
 } from '@mui/material';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { useNavigate } from 'react-router-dom';
 
-export default function Login() {
+export default function Login({ setUserLoggedIn }) {
 
   const navigate = useNavigate();
 
@@ -50,8 +50,8 @@ export default function Login() {
           localStorage.removeItem('demoUserExpenses')
           localStorage.removeItem('demoUserEmail')
 
-          console.log("Login successful!");
           toast.info("Login successful!");
+          setUserLoggedIn(true); 
           navigate('/'); // Redirect to dashboard
         } else {
           console.error("Login failed: " + res.message);

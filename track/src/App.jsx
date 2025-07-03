@@ -1,59 +1,47 @@
 
+import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+
 import './App.css';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import LogOut from './components/LogOut';
-// import PrivateRoute from './components/PrivateRoute';
 import SignIn from './components/SignIn';
 import TopBar from './components/TopBar';
-import { useEffect } from 'react'
-
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 function App() {
 
-  // const userLoggedIn = localStorage.getItem('token') === null ? false : true;
-  const userLoggedIn = !!localStorage.getItem('token'); // cleaner way
+  const [userLoggedIn, setUserLoggedIn] = useState(!!localStorage.getItem('token'));
 
+  // Set demo data if not logged in
   useEffect(() => {
     if (!userLoggedIn) {
-      // Set demo user data only if token is not present
       localStorage.setItem('demoUserEmail', 'demo@example.com');
       localStorage.setItem('demoUserExpenses', JSON.stringify([
-        {
-          id: 1,
-          spentDetails: 'Demo Food',
-          spentAmount: 500,
-          expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000),
-        },
-        {
-          id: 2,
-          spentDetails: 'Demo Transport',
-          spentAmount: 300,
-          expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000),
-        },
-        {
-          id: 3,
-          spentDetails: 'Demo Shopping',
-          spentAmount: 700,
-          expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000),
-        }
+        { id: 1, spentDetails: 'Demo Food', spentAmount: 500, expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000) },
+        { id: 2, spentDetails: 'Demo Transport', spentAmount: 300, expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000) },
+        { id: 3, spentDetails: 'Demo Shopping', spentAmount: 700, expenseCreatedTimeEpoch: Math.floor(Date.now() / 1000) }
       ]));
+
+      localStorage.setItem('demoUserSummary', JSON.stringify({
+        totalSpent: 1500,
+        remaining: 1000,
+        budget: 2500,
+        exceeded: false
+      }));
     }
   }, [userLoggedIn]);
 
   return (
-
     <div className="App">
       <Router>
-        <TopBar />
+        <TopBar userLoggedIn={userLoggedIn} setUserLoggedIn={setUserLoggedIn} />
         <Routes>
-          {/* <Route path="/" element={<PrivateRoute element={<Dashboard />} />} /> */}
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<LogOut />} />
+          <Route path="/" element={<Dashboard userLoggedIn={userLoggedIn} />} />
+          <Route path="/signin" element={<SignIn setUserLoggedIn={setUserLoggedIn} />} />
+          <Route path="/login" element={<Login setUserLoggedIn={setUserLoggedIn} />} />
+          <Route path="/logout" element={<LogOut setUserLoggedIn={setUserLoggedIn} />} />
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </Router>
@@ -63,3 +51,4 @@ function App() {
 }
 
 export default App;
+

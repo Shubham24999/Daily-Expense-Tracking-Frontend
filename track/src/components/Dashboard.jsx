@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import {
     Box, Typography, Paper, CircularProgress, Snackbar,
@@ -10,10 +10,9 @@ import ExpenseDetails from './ExpenseDetails';
 import WhileLoadingPage from './WhileLoadingPage';
 import UpdateBudgetForm from './BudgetForm';
 
-const Dashboard = () => {
+const Dashboard = ({ userLoggedIn }) => {
 
-    // const userLoggedIn = localStorage.getItem('token') === null ? false : true;
-    const userLoggedIn = !!localStorage.getItem('token'); // cleaner way
+    // const userLoggedIn = !!localStorage.getItem('token'); // cleaner way
 
     const [expenses, setExpenses] = useState([]);
     var userId = localStorage.getItem('userId');
@@ -33,7 +32,7 @@ const Dashboard = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const fetchSummary = () => {
+    const fetchSummary = useCallback(() => {
         axios.get(`http://127.0.0.1:8080/api/expense/summary/${userId}`)
             .then(res => {
                 console.log("Summary data", res.data);
@@ -45,9 +44,9 @@ const Dashboard = () => {
                 console.error("Error fetching summary", err);
                 setLoading(false);
             });
-    };
+    });
 
-    const fetchExpenses = () => {
+    const fetchExpenses = useCallback(() => {
 
         axios.get(`http://localhost:8080/api/expense/get/${userId}`)
             .then((res) => {
@@ -60,7 +59,7 @@ const Dashboard = () => {
                 setLoading(false);
             });
 
-    };
+    });
 
 
     useEffect(() => {

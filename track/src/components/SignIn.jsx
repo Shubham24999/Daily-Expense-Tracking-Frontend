@@ -13,10 +13,10 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const SignIn = () => {
+const SignIn = ({ setUserLoggedIn }) => {
 
   // alert("Google Sign Up Clicked");
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const SignIn = () => {
           localStorage.setItem('name', res.data.name);
           localStorage.removeItem('demoUserExpenses')
           localStorage.removeItem('demoUserEmail')
-
+          setUserLoggedIn(true);
           navigate('/'); // Redirect to dashboard
         } else {
           console.log("Signup failed: " + res.message);

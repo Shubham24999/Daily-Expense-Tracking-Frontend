@@ -28,19 +28,6 @@ export default function ExpenseDetails({ expenseData, isLoading }) {
 
   var index = 1;
 
-  const userLoggedIn = !!localStorage.getItem('token'); // cleaner way
-
-  if (!userLoggedIn) {
-    const raw = localStorage.getItem('demoUserExpenses');
-    try {
-      expenseData = raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      console.error("Failed to parse demoUserExpenses from localStorage:", e);
-      expenseData = [];
-    }
-  }
-
-
   if (!expenseData || expenseData.length === 0) {
     return (
       <TableContainer component={Paper} sx={{ mt: 4, p: { xs: 1, sm: 2, md: 3 } }}>
