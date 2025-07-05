@@ -48,7 +48,7 @@ const SignIn = ({ setUserLoggedIn }) => {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('userId', res.data.id);
           localStorage.setItem('name', res.data.name);
-          localStorage.removeItem('demoUserExpenses')
+          // localStorage.removeItem('demoUserExpenses')
           localStorage.removeItem('demoUserEmail')
           setUserLoggedIn(true);
           navigate('/'); // Redirect to dashboard

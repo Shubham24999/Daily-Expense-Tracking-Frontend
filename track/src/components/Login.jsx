@@ -47,7 +47,7 @@ export default function Login({ setUserLoggedIn }) {
           localStorage.setItem('token', token);
           localStorage.setItem('userId', id);
           localStorage.setItem('name', name);
-          localStorage.removeItem('demoUserExpenses')
+          // localStorage.removeItem('demoUserExpenses')
           localStorage.removeItem('demoUserEmail')
 
           toast.info("Login successful!");

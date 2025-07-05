@@ -190,7 +190,19 @@ const Dashboard = ({ userLoggedIn }) => {
                 </Button>
             </Box>
 
-            <ExpenseDetails expenseData={expenses} isLoading={loading} />
+            <ExpenseDetails
+                expenseData={expenses}
+                isLoading={loading}
+                onUpdate={(id, updatedData) => {
+                    axios.put(`/api/expense/update/${id}`, updatedData)
+                        .then(res => console.log("Updated:", res.data));
+                }}
+                onDelete={(id) => {
+                    axios.delete(`/api/expense/delete/${id}`)
+                        .then(res => console.log("Deleted:", res.data));
+                }}
+            />
+
 
             {/* Add Expense Modal */}
             <ExpenseForm

@@ -9,6 +9,9 @@ import Login from './components/Login';
 import LogOut from './components/LogOut';
 import SignIn from './components/SignIn';
 import TopBar from './components/TopBar';
+import Profile from './components/Profile';
+import ExpenseReports from './components/ExpenseReports';
+import Settings from './components/Settings';
 
 function App() {
 
@@ -33,6 +36,9 @@ function App() {
     }
   }, [userLoggedIn]);
 
+  console.log("user is ........", userLoggedIn);
+
+
   return (
     <div className="App">
       <Router>
@@ -42,6 +48,9 @@ function App() {
           <Route path="/signin" element={<SignIn setUserLoggedIn={setUserLoggedIn} />} />
           <Route path="/login" element={<Login setUserLoggedIn={setUserLoggedIn} />} />
           <Route path="/logout" element={<LogOut setUserLoggedIn={setUserLoggedIn} />} />
+          <Route path="/profile" element={<Profile userLoggedIn={userLoggedIn} />} />
+          <Route path="/expense-reports" element={<ExpenseReports userLoggedIn={userLoggedIn} />} />
+          <Route path="/settings" element={<Settings userLoggedIn={userLoggedIn} />} />
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </Router>

@@ -2,41 +2,59 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     AppBar, Box, Toolbar, Typography, Button, IconButton,
-    Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+    Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+    Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider
 } from '@mui/material';
+
 import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { toast } from 'react-toastify';
 
 export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
     const [openDialog, setOpenDialog] = React.useState(false);
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
     const navigate = useNavigate();
 
     const userName = localStorage.getItem('name');
 
     const handleLogoutConfirm = () => {
-        // Clear user data
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
         localStorage.removeItem('name');
         localStorage.removeItem('email');
-        localStorage.removeItem('userLoggedIn');
-      
         setUserLoggedIn(false);
-
         toast.success('Logged out successfully');
         setOpenDialog(false);
-        // window.location.href = "/";   tis is not a good method
         navigate("/");
-    
+    };
+
+    const toggleDrawer = (open) => () => {
+        setDrawerOpen(open);
+    };
+
+    const handleMenuClick = (path) => {
+        navigate(path);
+        setDrawerOpen(false);
     };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="menu"
+                        sx={{ mr: 2 }}
+                        onClick={toggleDrawer(true)}
+                    >
                         <MenuIcon />
                     </IconButton>
+
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         {userName ? `${userName}'s Expenses` : 'Demo User Expenses'}
                     </Typography>
@@ -52,16 +70,48 @@ export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
                 </Toolbar>
             </AppBar>
 
+            {/* Sidebar Drawer */}
+            <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+                <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+                    <List>
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={() => handleMenuClick("/profile")}>
+                                <ListItemIcon><AccountCircleIcon /></ListItemIcon>
+                                <ListItemText primary="Profile" />
+                            </ListItemButton>
+                        </ListItem>
+
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={() => handleMenuClick("/expense-reports")}>
+                                <ListItemIcon><ReceiptLongIcon /></ListItemIcon>
+                                <ListItemText primary="Expense Reports" />
+                            </ListItemButton>
+                        </ListItem>
+
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={() => handleMenuClick("/settings")}>
+                                <ListItemIcon><SettingsIcon /></ListItemIcon>
+                                <ListItemText primary="Settings" />
+                            </ListItemButton>
+                        </ListItem>
+
+                        <Divider />
+
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={() => setOpenDialog(true)}>
+                                <ListItemIcon><LogoutIcon color="error" /></ListItemIcon>
+                                <ListItemText primary="Log Out" />
+                            </ListItemButton>
+                        </ListItem>
+                    </List>
+                </Box>
+            </Drawer>
+
             {/* Logout Confirmation Dialog */}
-            <Dialog
-                open={openDialog}
-                onClose={() => setOpenDialog(false)}
-            >
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                 <DialogTitle>Confirm Logout</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to log out?
-                    </DialogContentText>
+                    <DialogContentText>Are you sure you want to log out?</DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
