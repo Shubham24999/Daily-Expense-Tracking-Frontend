@@ -18,6 +18,7 @@ export default function ExpenseDetails({ expenseData, isLoading, onUpdate, onDel
     });
   };
 
+
   const handleEditClose = () => {
     setEditExpense(null);
     setFormState({ spentAmount: '', spentDetails: '' });
@@ -28,13 +29,13 @@ export default function ExpenseDetails({ expenseData, isLoading, onUpdate, onDel
       formState.spentAmount !== editExpense.spentAmount ||
       formState.spentDetails !== editExpense.spentDetails
     ) {
-      onUpdate(editExpense.id, formState); // Call update only if changed
+      onUpdate(editExpense.expenseId, formState); // Call update only if changed
     }
     handleEditClose();
   };
 
   const handleDelete = () => {
-    onDelete(deleteConfirm.id);
+    onDelete(deleteConfirm.expenseId);
     setDeleteConfirm(null);
   };
 
@@ -42,9 +43,41 @@ export default function ExpenseDetails({ expenseData, isLoading, onUpdate, onDel
 
   if (!expenseData || expenseData.length === 0) {
     return (
-      <Typography variant="h6" sx={{ mt: 4 }}>
-        No expenses recorded yet.
-      </Typography>
+      <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Typography variant="h6">No Expense Details Found</Typography>
+        <Paper
+          key={1}
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: 2,
+            borderRadius: 2,
+            boxShadow: 2,
+          }}
+        >
+          <Box>
+            <Typography variant="subtitle1">
+              ₹ 0.00
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              spentDetails
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {new Date().toLocaleString()}
+            </Typography>
+          </Box>
+
+          <Box>
+            <IconButton color="primary">
+              <Edit />
+            </IconButton>
+            <IconButton color="error">
+              <Delete />
+            </IconButton>
+          </Box>
+        </Paper>
+      </Box>
     );
   }
 
@@ -72,7 +105,7 @@ export default function ExpenseDetails({ expenseData, isLoading, onUpdate, onDel
               {expense.spentDetails}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {new Date(expense.expenseCreatedTimeEpoch * 1000).toLocaleString()}
+              {new Date(expense.expenseCreatedTime * 1000).toLocaleString()}
             </Typography>
           </Box>
 
@@ -136,110 +169,3 @@ export default function ExpenseDetails({ expenseData, isLoading, onUpdate, onDel
 }
 
 
-
-
-
-// import { styled } from '@mui/material/styles';
-// import {
-//   Table, TableBody, TableCell, TableContainer,
-//   TableHead, TableRow, Paper, Typography, CircularProgress, Box
-// } from '@mui/material';
-
-// const StyledTableCell = styled(TableCell)(({ theme }) => ({
-//   [`&.${TableCell.head}`]: {
-//     backgroundColor: theme.palette.common.black,
-//     color: theme.palette.common.white,
-//   },
-//   [`&.${TableCell.body}`]: {
-//     fontSize: 14,
-//   },
-// }));
-
-// const StyledTableRow = styled(TableRow)(({ theme }) => ({
-//   '&:nth-of-type(odd)': {
-//     backgroundColor: theme.palette.action.hover,
-//   },
-//   '&:last-child td, &:last-child th': {
-//     border: 0,
-//   },
-// }));
-
-// export default function ExpenseDetails({ expenseData, isLoading }) {
-
-//   var index = 1;
-
-//   if (!expenseData || expenseData.length === 0) {
-//     return (
-//       <TableContainer component={Paper} sx={{ mt: 4, p: { xs: 1, sm: 2, md: 3 } }}>
-//         <Typography variant="h6" sx={{ m: 2 }}>
-//           Expense Details
-//         </Typography>
-
-//         {isLoading ? (
-//           <CircularProgress sx={{ m: 2 }} />
-//         ) : (
-//           <Box sx={{ overflowX: 'auto' }}>
-//             <Table sx={{ minWidth: 500 }} aria-label="customized table">
-//               <TableHead>
-//                 <TableRow>
-//                   <StyledTableCell>ID</StyledTableCell>
-//                   <StyledTableCell align="right">Amount (₹)</StyledTableCell>
-//                   <StyledTableCell align="right">Details</StyledTableCell>
-//                   <StyledTableCell align="right">Spent Time</StyledTableCell>
-//                 </TableRow>
-//               </TableHead>
-//               <TableBody>
-//                 <StyledTableRow>
-//                   <StyledTableCell colSpan={4} align="center">
-//                     No expenses recorded yet.
-//                   </StyledTableCell>
-//                 </StyledTableRow>
-//               </ TableBody>
-//             </Table>
-//           </Box>
-//         )}
-//       </TableContainer>
-//     );
-//   }
-
-//   return (
-//     <TableContainer component={Paper} sx={{ mt: 4, p: { xs: 1, sm: 2, md: 3 } }}>
-//       <Typography variant="h6" sx={{ m: 2 }}>
-//         Expense Details
-//       </Typography>
-
-//       {isLoading ? (
-//         <CircularProgress sx={{ m: 2 }} />
-//       ) : (
-//         <Box sx={{ overflowX: 'auto' }}>
-//           <Table sx={{ minWidth: 500 }} aria-label="customized table">
-//             <TableHead>
-//               <TableRow>
-//                 <StyledTableCell>ID</StyledTableCell>
-//                 <StyledTableCell align="right">Amount (₹)</StyledTableCell>
-//                 <StyledTableCell align="right">Details</StyledTableCell>
-//                 <StyledTableCell align="right">Spent Time</StyledTableCell>
-//               </TableRow>
-//             </TableHead>
-//             <TableBody>
-//               {expenseData.map((expense) => (
-//                 <StyledTableRow key={expense.id}>
-//                   <StyledTableCell component="th" scope="row">
-//                     {index++}
-//                   </StyledTableCell>
-//                   <StyledTableCell align="right">
-//                     {expense.spentAmount.toFixed(2)}
-//                   </StyledTableCell>
-//                   <StyledTableCell align="right">{expense.spentDetails}</StyledTableCell>
-//                   <StyledTableCell align="right">
-//                     {new Date(expense.expenseCreatedTimeEpoch * 1000).toLocaleString()}
-//                   </StyledTableCell>
-//                 </StyledTableRow>
-//               ))}
-//             </TableBody>
-//           </Table>
-//         </Box>
-//       )}
-//     </TableContainer>
-//   );
-// }

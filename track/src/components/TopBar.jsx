@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
     AppBar, Box, Toolbar, Typography, Button, IconButton,
     Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
@@ -55,9 +55,13 @@ export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
                         <MenuIcon />
                     </IconButton>
 
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        {userName ? `${userName}'s Expenses` : 'Demo User Expenses'}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            <Link to="/" style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
+                                {userName ? `${userName}'s Expenses` : 'Demo User Expenses'}
+                            </Link>
+                        </Typography>
+                    </Box>
 
                     {userLoggedIn ? (
                         <Button color="inherit" onClick={() => setOpenDialog(true)}>LogOut</Button>

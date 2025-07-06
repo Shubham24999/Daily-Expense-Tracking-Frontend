@@ -76,7 +76,7 @@ const SignIn = ({ setUserLoggedIn }) => {
       >
         <Paper elevation={3} sx={{ padding: 4, width: 320 }}>
           <Typography variant="h5" align="center" gutterBottom>
-            Expenses Tracker Sign In
+           Please Fill Details
           </Typography>
 
           <form onSubmit={handleEmailSignUp}>
@@ -85,7 +85,6 @@ const SignIn = ({ setUserLoggedIn }) => {
               name="name"
               type="text"
               fullWidth
-              required
               margin="normal"
               value={formData.name}
               onChange={handleChange}

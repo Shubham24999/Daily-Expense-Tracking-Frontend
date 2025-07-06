@@ -36,9 +36,6 @@ function App() {
     }
   }, [userLoggedIn]);
 
-  console.log("user is ........", userLoggedIn);
-
-
   return (
     <div className="App">
       <Router>

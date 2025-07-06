@@ -31,6 +31,7 @@ export default function Login({ setUserLoggedIn }) {
       ...prev,
       [name]: value
     }));
+
   };
 
   const handleEmailLogin = (e) => {
@@ -39,90 +40,102 @@ export default function Login({ setUserLoggedIn }) {
     axios.post('http://127.0.0.1:8080/auth/login', formData)
       .then((response) => {
         const res = response.data;
+        console.log("Login response:", response);
 
-        if (res.status === "OK") {
+        if (res.status === "OK" && res.data) {
           const { token, id, name } = res.data;
 
-          // Store in localStorage
           localStorage.setItem('token', token);
           localStorage.setItem('userId', id);
           localStorage.setItem('name', name);
-          // localStorage.removeItem('demoUserExpenses')
-          localStorage.removeItem('demoUserEmail')
+          localStorage.removeItem('demoUserEmail');
 
-          toast.info("Login successful!");
-          setUserLoggedIn(true); 
-          navigate('/'); // Redirect to dashboard
+          toast.success("Login successful!");
+          setUserLoggedIn(true);
+          navigate('/');  // ✅ Redirect to Dashboard
+        } else if (res.status === "FAIL" && res.message.includes("User not found! Please sign up before logging in.")) {
+          navigate('/signin');
+          toast.warn("No account found. Please Sign up before logging.");         
         } else {
-          console.error("Login failed: " + res.message);
-          toast.error("Something went Wrong...");
+          toast.error(res.message || "Something went wrong...");
         }
       })
       .catch((error) => {
+
         console.error("Login error:", error);
         toast.error("Login failed. Please check your credentials.");
       });
   };
 
 
-  return (
-    <Box
-      sx={{
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: '#f5f5f5',
-      }}
-    >
-      <Paper elevation={3} sx={{ padding: 4, width: 320 }}>
-        <Typography variant="h5" align="center" gutterBottom>
-          Expenses Tracker Login
-        </Typography>
 
-        <form onSubmit={handleEmailLogin}>
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            fullWidth
-            required
-            margin="normal"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            fullWidth
-            required
-            margin="normal"
-            value={formData.password}
-            onChange={handleChange}
-          />
+  return (
+    <>
+      <Box
+        sx={{
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: '#f5f5f5',
+        }}
+      >
+        <Paper elevation={3} sx={{ padding: 4, width: 320 }}>
+          <Typography variant="h5" align="center" gutterBottom>
+            Expenses Tracker Login
+          </Typography>
+
+          <form onSubmit={handleEmailLogin}>
+            <TextField
+              label="Email"
+              name="email"
+              type="email"
+              fullWidth
+              required
+              margin="normal"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <TextField
+              label="Password"
+              name="password"
+              type="password"
+              fullWidth
+              required
+              margin="normal"
+              value={formData.password}
+              onChange={handleChange}
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 2 }}
+            >
+              Login
+            </Button>
+          </form>
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2">
+              Don't have an account? <a href="/signin">Sign Up</a>
+            </Typography>
+          </Box>
+
+          <Divider sx={{ my: 3 }}>OR</Divider>
 
           <Button
-            type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 2 }}
+            color="primary"
+            href="/auth/google"
           >
-            Login
+            Login with Google
           </Button>
-        </form>
+        </Paper>
+      </Box>
 
-        <Divider sx={{ my: 3 }}>OR</Divider>
 
-        <Button
-          fullWidth
-          variant="contained"
-          color="primary"
-          href="/auth/google"
-        >
-          Login with Google
-        </Button>
-      </Paper>
-    </Box>
+    </>
   );
 }
