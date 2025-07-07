@@ -43,23 +43,35 @@ const SignIn = ({ setUserLoggedIn }) => {
     axios.post('http://127.0.0.1:8080/auth/signup', formData)
       .then((response) => {
         const res = response.data;
-        if (res.status === "Ok") {
-          // Save token & user info
+        console.log("///////", res);
+
+        if (res.status === "Ok" && res.data) {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('userId', res.data.id);
           localStorage.setItem('name', res.data.name);
-          // localStorage.removeItem('demoUserExpenses')
-          localStorage.removeItem('demoUserEmail')
+          localStorage.removeItem('demoUserEmail');
           setUserLoggedIn(true);
-          navigate('/'); // Redirect to dashboard
+          navigate('/');
         } else {
-          console.log("Signup failed: " + res.message);
+          toast.warn(`Signup failed: ${res.message}`);
         }
       })
       .catch((err) => {
+        if (err.response && err.response.data) {
+          const res = err.response.data;
+
+          if (res.status === "FAIL" && res.message.includes("Email already exists!")) {
+            toast.warn(`${res.message} Please use another for Signup`);
+          } else {
+            toast.error(`Signup failed: ${res.message}`);
+          }
+        } else {
+          toast.error("Signup failed. Please try again.");
+        }
+
         console.error("Signup error", err);
-        toast.error("Signup failed. Please try again.");
       });
+
   };
 
 
@@ -76,7 +88,7 @@ const SignIn = ({ setUserLoggedIn }) => {
       >
         <Paper elevation={3} sx={{ padding: 4, width: 320 }}>
           <Typography variant="h5" align="center" gutterBottom>
-           Please Fill Details
+            Please Fill Details
           </Typography>
 
           <form onSubmit={handleEmailSignUp}>

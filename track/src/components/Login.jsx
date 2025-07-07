@@ -40,7 +40,6 @@ export default function Login({ setUserLoggedIn }) {
     axios.post('http://127.0.0.1:8080/auth/login', formData)
       .then((response) => {
         const res = response.data;
-        console.log("Login response:", response);
 
         if (res.status === "OK" && res.data) {
           const { token, id, name } = res.data;
@@ -52,20 +51,31 @@ export default function Login({ setUserLoggedIn }) {
 
           toast.success("Login successful!");
           setUserLoggedIn(true);
-          navigate('/');  // ✅ Redirect to Dashboard
-        } else if (res.status === "FAIL" && res.message.includes("User not found! Please sign up before logging in.")) {
-          navigate('/signin');
-          toast.warn("No account found. Please Sign up before logging.");         
+          navigate('/');  // Redirect to dashboard
         } else {
-          toast.error(res.message || "Something went wrong...");
+          toast.error(res.message || "Something went wrong.");
         }
       })
-      .catch((error) => {
+      .catch((err) => {
+        if (err.response && err.response.data) {
+          const res = err.response.data;
 
-        console.error("Login error:", error);
-        toast.error("Login failed. Please check your credentials.");
+          if (res.status === "FAIL" && res.message.includes("User not found!")) {
+            toast.warn("No account found. Please sign up first.");
+            navigate('/signin');
+          } else if (res.status === "FAIL" && res.message.includes("Invalid credentials")) {
+            toast.warn("Incorrect email or password.");
+          } else {
+            toast.error(res.message || "Login failed.");
+          }
+        } else {
+          toast.error("Login failed. Please try again later.");
+        }
+
+        console.error("Login error:", err);
       });
   };
+
 
 
 
