@@ -63,19 +63,19 @@ export default function ExpenseDetails({ expenseData, isLoading, onUpdate, onDel
             <Typography variant="body2" color="text.secondary">
               spentDetails
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            {/* <Typography variant="caption" color="text.secondary">
               {new Date().toLocaleString()}
-            </Typography>
+            </Typography> */}
           </Box>
 
-          <Box>
+          {/* <Box>
             <IconButton color="primary">
               <Edit />
             </IconButton>
             <IconButton color="error">
               <Delete />
             </IconButton>
-          </Box>
+          </Box> */}
         </Paper>
       </Box>
     );

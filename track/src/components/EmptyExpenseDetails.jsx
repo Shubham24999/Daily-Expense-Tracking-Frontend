@@ -42,7 +42,7 @@ export default function EmptyExpenseDetails({
           {isPlaceholder ? 'No Expense Details' : expense.spentDetails}
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          {isPlaceholder ? 'DD/MM/YYYY HH:MM' : new Date(expense.expenseCreatedTimeEpoch * 1000).toLocaleString()}
+          'DD/MM/YYYY HH:MM'
         </Typography>
       </Box>
 

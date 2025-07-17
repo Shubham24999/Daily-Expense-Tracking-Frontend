@@ -5,25 +5,22 @@ import {
 } from '@mui/material';
 
 import axios from 'axios';
-
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ExpenseForm = ({ open, onClose, onSuccess }) => {
-
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  var userId = localStorage.getItem('userId');
 
+  const token = localStorage.getItem('token'); // ✅ Retrieve token from storage
 
-  var expenseDetails = {
-    userId: userId,
+  const initialExpenseDetails = {
     spentDetails: '',
     spentAmount: '',
     date: Math.floor(Date.now() / 1000),
   };
 
-  const [formData, setFormData] = useState(expenseDetails);
+  const [formData, setFormData] = useState(initialExpenseDetails);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,42 +28,50 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
       ...prev,
       [name]: value
     }));
-
   };
 
   const handleSubmit = () => {
-
     if (Number(formData.spentAmount) < 0) {
-      toast.warn("Please Use Valid Number.");
-      formData.spentAmount = '';
-
+      toast.warn("Please use a valid number.");
+      setFormData((prev) => ({ ...prev, spentAmount: '' }));
+      return;
     }
-    else if (!formData.spentAmount || Number(formData.spentAmount) === 0) {
-      setErrorMessage("Please Add Spent Amount for Expense.");
+
+    if (!formData.spentAmount || Number(formData.spentAmount) === 0) {
+      setErrorMessage("Please add Spent Amount for the Expense.");
       setShowError(true);
-    } else {
-      const payload = {
-        ...formData,
-        spentAmount: Number(formData.spentAmount),
-      };
-
-      axios.post('http://localhost:8080/api/expense/add', payload)
-        .then(() => {
-          onSuccess();
-          onClose();
-          setFormData(expenseDetails);
-        })
-        .catch((err) => console.error('Submit error', err));
+      return;
     }
-  };
 
+    const payload = {
+      ...formData,
+      spentAmount: Number(formData.spentAmount),
+    };
+
+    axios.post('http://localhost:8080/api/expense/add', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ Added token in header
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(() => {
+        onSuccess();
+        onClose();
+        setFormData(initialExpenseDetails);
+        toast.success('Expense added successfully!');
+      })
+      .catch((err) => {
+        console.error('Submit error', err);
+        toast.error('Failed to add expense.');
+      });
+  };
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"       // 'xs', 'sm', 'md', etc.
-      fullWidth={true}   // limits width but doesn’t go full screen
+      maxWidth="sm"
+      fullWidth
       PaperProps={{
         sx: {
           p: 2,
@@ -98,7 +103,8 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
         <Button onClick={onClose} color="secondary">Cancel</Button>
         <Button onClick={handleSubmit} variant="contained" color="primary">Submit</Button>
       </DialogActions>
-      {/* to show alert message */}
+
+      {/* Snackbar for error messages */}
       <Snackbar
         open={showError}
         autoHideDuration={2000}
@@ -109,7 +115,6 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
           {errorMessage}
         </Alert>
       </Snackbar>
-
     </Dialog>
   );
 };

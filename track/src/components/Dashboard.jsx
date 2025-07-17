@@ -11,7 +11,7 @@ import UpdateBudgetForm from './BudgetForm';
 
 const Dashboard = ({ userLoggedIn }) => {
     const [expenses, setExpenses] = useState([]);
-    const userId = localStorage.getItem('userId');
+    // const userId = localStorage.getItem('userId');
 
     const [summaryData, setSummaryData] = useState({
         totalSpent: 0,
@@ -31,7 +31,7 @@ const Dashboard = ({ userLoggedIn }) => {
     const token = localStorage.getItem('token');  // ✅ Added for Authorization
 
     const fetchSummary = useCallback(() => {
-        axios.get(`http://127.0.0.1:8080/api/expense/summary/${userId}`, {
+        axios.get(`http://127.0.0.1:8080/api/expense/summary`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -42,10 +42,10 @@ const Dashboard = ({ userLoggedIn }) => {
                 console.error("Error fetching summary", err);
                 setLoading(false);
             });
-    }, [userId, token]);
+    }, [ token]);
 
     const fetchExpenses = useCallback(() => {
-        axios.get(`http://localhost:8080/api/expense/get/${userId}`, {
+        axios.get(`http://localhost:8080/api/expense/get`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then((res) => {
@@ -56,7 +56,7 @@ const Dashboard = ({ userLoggedIn }) => {
                 console.error("Error fetching expenses", error);
                 setLoading(false);
             });
-    }, [userId, token]);
+    }, [ token]);
 
     useEffect(() => {
         if (userLoggedIn) {

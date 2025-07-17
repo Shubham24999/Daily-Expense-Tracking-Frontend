@@ -18,7 +18,12 @@ export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const navigate = useNavigate();
 
-    const userName = localStorage.getItem('name');
+    var userName;
+    if (userLoggedIn) {
+        userName = localStorage.getItem('name');
+    } else {
+        userName = 'Demo User';
+    }
 
     const handleLogoutConfirm = () => {
         localStorage.removeItem('token');
@@ -92,12 +97,12 @@ export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
                             </ListItemButton>
                         </ListItem>
 
-                        <ListItem disablePadding>
+                        {/* <ListItem disablePadding>
                             <ListItemButton onClick={() => handleMenuClick("/settings")}>
                                 <ListItemIcon><SettingsIcon /></ListItemIcon>
                                 <ListItemText primary="Settings" />
                             </ListItemButton>
-                        </ListItem>
+                        </ListItem> */}
 
                         <Divider />
 
