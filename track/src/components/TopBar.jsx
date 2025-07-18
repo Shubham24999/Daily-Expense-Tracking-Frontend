@@ -9,7 +9,6 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { toast } from 'react-toastify';
 
@@ -41,8 +40,18 @@ export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
     };
 
     const handleMenuClick = (path) => {
-        navigate(path);
+
+        if (path === "/expense-reports" && !userLoggedIn) {
+            // ✅ If user is not logged in, redirect to login page
+            toast.info("Please login to access this page");
+            navigate("/login");
+        } else {
+            navigate(path);
+        }
         setDrawerOpen(false);
+
+        // navigate(path);
+        // setDrawerOpen(false);
     };
 
     return (
@@ -97,6 +106,7 @@ export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
                             </ListItemButton>
                         </ListItem>
 
+
                         {/* <ListItem disablePadding>
                             <ListItemButton onClick={() => handleMenuClick("/settings")}>
                                 <ListItemIcon><SettingsIcon /></ListItemIcon>
@@ -107,7 +117,13 @@ export default function TopBar({ userLoggedIn, setUserLoggedIn }) {
                         <Divider />
 
                         <ListItem disablePadding>
-                            <ListItemButton onClick={() => setOpenDialog(true)}>
+                            <ListItemButton onClick={() => {
+                                if (!userLoggedIn) {
+                                    toast.warning("Please Login First");
+                                } else {
+                                    setOpenDialog(true);
+                                }
+                            }}>
                                 <ListItemIcon><LogoutIcon color="error" /></ListItemIcon>
                                 <ListItemText primary="Log Out" />
                             </ListItemButton>
