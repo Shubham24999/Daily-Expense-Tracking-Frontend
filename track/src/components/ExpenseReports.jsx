@@ -26,7 +26,6 @@ const ExpenseReports = ({ userLoggedIn }) => {
     const [totalSpent, setTotalSpent] = useState(0);
 
     const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
 
     // --- local date formatter (avoid UTC shift) ---
     const formatDate = (date) => {
@@ -81,20 +80,16 @@ const ExpenseReports = ({ userLoggedIn }) => {
     }, [page, size, userLoggedIn]);
 
     // ---------- Export handlers ----------
-    const downloadFile = async (type /* 'excel' | 'pdf' */) => {
+    const downloadFile = async (type) => {
         const finalFromDate = fromDate || defaultFromDate;
         const finalToDate = toDate || defaultToDate;
 
-        const base =
-            type === "excel"
-                ? "http://localhost:8080/api/export/excel"
-                : "http://localhost:8080/api/export/pdf";
+        const url = `http://localhost:8080/api/profile/${type}?fromDate=${finalFromDate}&toDate=${finalToDate}`;
 
         try {
-            const response = await axios.get(base, {
+            const response = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` },
-                params: { userId, fromDate: finalFromDate, toDate: finalToDate },
-                responseType: "blob", // important!
+                responseType: "blob",
             });
 
             const blob = new Blob([response.data], {
@@ -103,23 +98,18 @@ const ExpenseReports = ({ userLoggedIn }) => {
                     : "application/pdf",
             });
 
-            const url = window.URL.createObjectURL(blob);
+            const downloadUrl = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
-            const safeFrom = finalFromDate.replaceAll("-", "");
-            const safeTo = finalToDate.replaceAll("-", "");
-            link.href = url;
-            link.download = `expenses-${safeFrom}_to_${safeTo}.${type === "excel" ? "xlsx" : "pdf"}`;
-            document.body.appendChild(link);
+            link.href = downloadUrl;
+            link.download = `expenses-${finalFromDate}_to_${finalToDate}.${type === "excel" ? "xlsx" : "pdf"}`;
             link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-
-            toast.success(`Downloaded ${type.toUpperCase()} report.`);
-        } catch (err) {
-            console.error(`Error downloading ${type} report:`, err);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error(`Error downloading ${type}:`, error);
             toast.error(`Failed to download ${type.toUpperCase()} report.`);
         }
     };
+
 
     if (!userLoggedIn) {
         return <Navigate to="/login" replace />;
@@ -245,7 +235,7 @@ const ExpenseReports = ({ userLoggedIn }) => {
                                             {new Date(exp.expenseCreatedTime * 1000).toLocaleString()}
                                         </Typography>
                                     </Box>
-                                    <Typography variant="h6" color="primary">
+                                    <Typography variant="h6" color="text.secondary">
                                         ₹ {exp.spentAmount}
                                     </Typography>
                                 </Paper>

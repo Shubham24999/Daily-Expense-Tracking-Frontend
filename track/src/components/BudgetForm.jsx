@@ -4,7 +4,7 @@ import {
   TextField, Button, Alert, Snackbar
 } from '@mui/material';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
@@ -49,7 +49,15 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
         ...formData,
         budgetAmount: Number(formData.budgetAmount),
       };
-      axios.post('http://localhost:8080/api/expense/update/budget', payload)
+      const token = localStorage.getItem('token');  // ensure token is saved at login
+
+      axios.post(
+        'http://localhost:8080/api/expense/update/budget',
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      )
         .then(() => {
           onSuccess();
           onClose();
