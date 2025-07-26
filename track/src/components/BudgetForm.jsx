@@ -1,70 +1,58 @@
 import React, { useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Button, Alert, Snackbar
+  TextField, Button, Snackbar, Alert, Box
 } from '@mui/material';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
-  var userId = localStorage.getItem('userId');
-  var userDetails = {
+  const userId = localStorage.getItem('userId');
+
+  const defaultFormData = {
     userId: userId,
-    // spentDetails: '',
     budgetAmount: '',
-    // spentAmount: '',
-    // remainingAmount: '',
-    // date: Math.floor(Date.now() / 1000),
   };
 
+  const [formData, setFormData] = useState(defaultFormData);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [formData, setFormData] = useState(userDetails);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const parsedValue = ['budgetAmount', 'spentAmount', 'remainingAmount'].includes(name)
-      ? value
-      : value;
-
     setFormData((prev) => ({
       ...prev,
-      [name]: parsedValue
+      [name]: value,
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const amount = Number(formData.budgetAmount);
 
-    if (Number(formData.budgetAmount) < 0) {
-      toast.warn("Please Use Valid Number.");
-      formData.spentAmount = '';
-
-    } else if (formData.budgetAmount === 0) {
-      setErrorMessage("Please add Budget Amount to Update");
+    if (isNaN(amount) || amount <= 0) {
+      setErrorMessage("Please enter a valid budget amount.");
       setShowError(true);
-    } else {
-      const payload = {
-        ...formData,
-        budgetAmount: Number(formData.budgetAmount),
-      };
-      const token = localStorage.getItem('token');  // ensure token is saved at login
+      return;
+    }
 
-      axios.post(
-        'http://localhost:8080/api/expense/update/budget',
-        payload,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
-        .then(() => {
-          onSuccess();
-          onClose();
+    const payload = {
+      ...formData,
+      budgetAmount: amount,
+    };
 
-          setFormData(userDetails);
-        })
-        .catch((err) => console.error('Update error', err));
+    const token = localStorage.getItem('token');
+
+    try {
+      await axios.post('http://localhost:8080/api/expense/update/budget', payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Budget updated successfully!");
+      onSuccess();
+      onClose();
+      setFormData(defaultFormData);
+    } catch (err) {
+      console.error('Update error', err);
+      toast.error("Failed to update budget.");
     }
   };
 
@@ -72,38 +60,55 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="xs"
       fullWidth
       PaperProps={{
         sx: {
-          p: 2,
-          borderRadius: 3,
+          p: 3,
+          borderRadius: 4,
         },
       }}
     >
-      <DialogTitle>Update Budget</DialogTitle>
+      <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+        Update Your Budget
+      </DialogTitle>
+
       <DialogContent>
-        <TextField
-          label="Budget Amount"
-          name="budgetAmount"
-          type="number"
-          value={formData.budgetAmount}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
+        <Box display="flex" flexDirection="column" gap={2}>
+          <TextField
+            name="budgetAmount"
+            label="Enter Budget Amount"
+            type="number"
+            value={formData.budgetAmount}
+            onChange={handleChange}
+            fullWidth
+            InputProps={{
+              sx: { borderRadius: 2 },
+            }}
+          />
+        </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">Update</Button>
+
+      <DialogActions sx={{ justifyContent: 'space-between', px: 3 }}>
+        <Button onClick={onClose} color="secondary" variant="outlined" sx={{ borderRadius: 2 }}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary" sx={{ borderRadius: 2 }}>
+          Update
+        </Button>
       </DialogActions>
+
       <Snackbar
         open={showError}
-        autoHideDuration={2000}
+        autoHideDuration={3000}
         onClose={() => setShowError(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setShowError(false)} severity="error" sx={{ width: '100%' }}>
+        <Alert
+          onClose={() => setShowError(false)}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
           {errorMessage}
         </Alert>
       </Snackbar>
