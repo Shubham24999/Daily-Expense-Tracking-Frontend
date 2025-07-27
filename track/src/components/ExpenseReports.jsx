@@ -15,7 +15,8 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const ExpenseReports = ({ userLoggedIn }) => {
+const ExpenseReports = ({ userLoggedIn, backendUrl }) => {
+    
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [fromDate, setFromDate] = useState("");
@@ -54,7 +55,7 @@ const ExpenseReports = ({ userLoggedIn }) => {
         const finalToDate = toDate || defaultToDate;
 
         axios
-            .get("http://localhost:8080/api/profile/expense/get", {
+            .get(`${backendUrl}/api/profile/expense/get`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { page, size, fromDate: finalFromDate, toDate: finalToDate },
             })
@@ -84,7 +85,7 @@ const ExpenseReports = ({ userLoggedIn }) => {
         const finalFromDate = fromDate || defaultFromDate;
         const finalToDate = toDate || defaultToDate;
 
-        const url = `http://localhost:8080/api/profile/${type}?fromDate=${finalFromDate}&toDate=${finalToDate}`;
+        const url = `${backendUrl}/api/profile/${type}?fromDate=${finalFromDate}&toDate=${finalToDate}`;
 
         try {
             const response = await axios.get(url, {

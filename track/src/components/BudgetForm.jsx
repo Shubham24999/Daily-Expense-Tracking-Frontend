@@ -7,6 +7,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
+  var backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
   const userId = localStorage.getItem('userId');
 
   const defaultFormData = {
@@ -43,7 +44,7 @@ const UpdateBudgetForm = ({ open, onClose, onSuccess }) => {
     const token = localStorage.getItem('token');
 
     try {
-      await axios.post('http://localhost:8080/api/expense/update/budget', payload, {
+      await axios.post(`${backendUrl}/api/expense/update/budget`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Budget updated successfully!");

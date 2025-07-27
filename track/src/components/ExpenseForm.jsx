@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ExpenseForm = ({ open, onClose, onSuccess }) => {
+  var backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -48,7 +49,7 @@ const ExpenseForm = ({ open, onClose, onSuccess }) => {
       spentAmount: Number(formData.spentAmount),
     };
 
-    axios.post('http://localhost:8080/api/expense/add', payload, {
+    axios.post(`${backendUrl}/api/expense/add`, payload, {
       headers: {
         Authorization: `Bearer ${token}`, // ✅ Added token in header
         'Content-Type': 'application/json',

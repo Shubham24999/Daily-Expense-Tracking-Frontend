@@ -23,6 +23,7 @@ const parseJwt = (token) => {
 };
 
 function App() {
+  var backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
   const [userLoggedIn, setUserLoggedIn] = useState(!!localStorage.getItem('token'));
 
   useEffect(() => {
@@ -70,12 +71,12 @@ function App() {
       <Router>
         <TopBar userLoggedIn={userLoggedIn} setUserLoggedIn={setUserLoggedIn} />
         <Routes>
-          <Route path="/" element={<Dashboard userLoggedIn={userLoggedIn} />} />
-          <Route path="/signin" element={<SignIn setUserLoggedIn={setUserLoggedIn} />} />
-          <Route path="/login" element={<Login setUserLoggedIn={setUserLoggedIn} />} />
+          <Route path="/" element={<Dashboard userLoggedIn={userLoggedIn} backendUrl={backendUrl} />} />
+          <Route path="/signin" element={<SignIn setUserLoggedIn={setUserLoggedIn} backendUrl={backendUrl} />} />
+          <Route path="/login" element={<Login setUserLoggedIn={setUserLoggedIn} backendUrl={backendUrl} />} />
           <Route path="/logout" element={<LogOut setUserLoggedIn={setUserLoggedIn} />} />
-          <Route path="/profile" element={<Profile userLoggedIn={userLoggedIn} />} />
-          <Route path="/expense-reports" element={<ExpenseReports userLoggedIn={userLoggedIn} />} />
+          <Route path="/profile" element={<Profile userLoggedIn={userLoggedIn} backendUrl={backendUrl} />} />
+          <Route path="/expense-reports" element={<ExpenseReports userLoggedIn={userLoggedIn} backendUrl={backendUrl} />} />
           {/* <Route path="/settings" element={<Settings userLoggedIn={userLoggedIn} />} /> */}
           <Route path="*" element={<div>Content You are Searching is not found.</div>} />
         </Routes>

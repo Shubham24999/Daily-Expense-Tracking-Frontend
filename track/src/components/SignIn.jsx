@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const SignIn = ({ setUserLoggedIn }) => {
+const SignIn = ({ setUserLoggedIn, backendUrl }) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -34,7 +34,7 @@ const SignIn = ({ setUserLoggedIn }) => {
   const handleEmailSignUp = (e) => {
     e.preventDefault();
 
-    axios.post('http://127.0.0.1:8080/auth/signup', formData)
+    axios.post(`${backendUrl}/auth/signup`, formData)
       .then((response) => {
         const res = response.data;
 

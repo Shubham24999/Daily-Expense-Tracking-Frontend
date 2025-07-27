@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { TextField, Button, Box, Typography, Paper } from '@mui/material';
 import { toast } from 'react-toastify';
 
-const Profile = ({ userLoggedIn }) => {
+const Profile = ({ userLoggedIn, backendUrl }) => {
     const [profileData, setProfileData] = useState(null);
     const [formData, setFormData] = useState({ name: '', phoneNumber: '' });
     const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ const Profile = ({ userLoggedIn }) => {
 
         const fetchProfile = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/profile/', {
+                const res = await fetch(`${backendUrl}/api/profile/`, {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('token'),
                     },
@@ -51,7 +51,7 @@ const Profile = ({ userLoggedIn }) => {
 
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:8080/api/profile/update', {
+            const res = await fetch(`${backendUrl}/api/profile/update`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

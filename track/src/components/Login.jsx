@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
-export default function Login({ setUserLoggedIn }) {
+export default function Login({ setUserLoggedIn, backendUrl }) {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ export default function Login({ setUserLoggedIn }) {
   const handleEmailLogin = (e) => {
     e.preventDefault();
 
-    axios.post('http://127.0.0.1:8080/auth/login', formData)
+    axios.post(`${backendUrl}/auth/login`, formData)
       .then((response) => {
         const res = response.data;
 
