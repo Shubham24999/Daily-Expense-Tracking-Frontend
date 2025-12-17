@@ -23,7 +23,8 @@ const parseJwt = (token) => {
 };
 
 function App() {
-  var backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+  // var backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+   var backendUrl = 'http://localhost:8080';
   const [userLoggedIn, setUserLoggedIn] = useState(!!localStorage.getItem('token'));
 
   useEffect(() => {
